@@ -26,15 +26,43 @@ var gridHeight = canvas.height / gridSize;
 var snake = [{ x: 0, y: 0 }];
 var snakeLength = 1;
 var direction = "right";
+var scoreTextBox= document.getElementById("score");
 
 var apple = { x: 30, y: 30 };
+var gameOverPopup = document.getElementById("gameOverPopup");
 var gameInterval;
+var gameOver = false;
 function startGame() {
-  clearInterval(gameInterval);
-  gameInterval = setInterval(update, 400);
+  if(gameOver==true){
+    clearInterval(gameInterval);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    snake = [{ x: 0, y: 0 }];
+    snakeLength = 1;
+    direction = "right";
+    document.getElementById("score").textContent = "Score : "+0;
+    scoreTextBox.style.visibility="visible";
+    apple = { x: 30, y: 30 };
+    gameOver=false;
+    gameInterval = setInterval(update, 400);
+    gameOverPopup.style.visibility = "hidden";
+  }
+  else{
+    clearInterval(gameInterval);
+    gameInterval = setInterval(update, 400);
+  }
+  
 }
 function pauseGame() {
-  gameInterval = clearInterval();
+  gameInterval = clearInterval(gameInterval);
+  
+}
+var scoreElement = document.getElementById("scorePop");
+function showGameOverPopup() {
+
+  gameOverPopup.style.visibility = "visible";
+  scoreTextBox.style.visibility="hidden";
+  gameOver=true;
+  pauseGame();
 }
 function getRandomMultipleOf30() {
   const min = 0; // Minimum value for the random number (inclusive)
@@ -72,6 +100,11 @@ function update() {
   if (head.x === apple.x && head.y === apple.y) {
     getRandomMultipleOf30();
     snakeLength++;
+    scoreTextBox.textContent = "Score : "+snake.length;
+    scoreElement.textContent = snake.length;
+  }
+  if(checkSelfBite()==true){
+    showGameOverPopup();
   }
 
   snake.unshift(head);
@@ -82,7 +115,25 @@ function update() {
 
   drawSnake();
 }
+function checkSelfBite() {
+  var bodySet = new Set(); // Create a hash set to store the snake's body segments
 
+  // Iterate over the snake's body segments
+  for (var i = 0; i < snake.length; i++) {
+    var segment = snake[i];
+    var segmentKey = segment.x + '-' + segment.y; // Generate a unique key for the segment
+
+    // Check if the segment is already in the hash set
+    if (bodySet.has(segmentKey)) {
+      return true; // Snake has bitten itself
+    }
+
+    // Add the segment to the hash set
+    bodySet.add(segmentKey);
+  }
+
+  return false; // Snake has not bitten itself
+}
 function handleKeydown(event) {
   if (directionChangeAllowed) {
     if (event.key === "ArrowRight" && direction !== "left") {

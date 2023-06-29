@@ -10,11 +10,18 @@
         <script src="app.js" async defer></script>
     </head>
     <body bgcolor="black">
-        <h1>Snake Game</h1>
+        <div>
+            <h1>Snake Game</h1>
+            <h2 id="score">Score : 0</h2>
+        </div>
+        <div id="gameOverPopup" class="popup">
+            <h2>Game Over!</h2>
+            <p>Score: <span id="scorePop"></span></p>
+          </div>
         <div id="game-container">
             <canvas id="myCanvas"></canvas>  
         </div>
-        <div>
+        <div id="button-container">
             <button id="start-button" onclick="startGame()">Start</button>
             <button id="pause-button" onclick="pauseGame()">Pause</button>
         </div>
