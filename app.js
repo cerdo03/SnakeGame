@@ -26,42 +26,38 @@ var gridHeight = canvas.height / gridSize;
 var snake = [{ x: 0, y: 0 }];
 var snakeLength = 1;
 var direction = "right";
-var scoreTextBox= document.getElementById("score");
+var scoreTextBox = document.getElementById("score");
 
 var apple = { x: 30, y: 30 };
 var gameOverPopup = document.getElementById("gameOverPopup");
 var gameInterval;
 var gameOver = false;
 function startGame() {
-  if(gameOver==true){
+  if (gameOver == true) {
     clearInterval(gameInterval);
     context.clearRect(0, 0, canvas.width, canvas.height);
     snake = [{ x: 0, y: 0 }];
     snakeLength = 1;
     direction = "right";
-    document.getElementById("score").textContent = "Score : "+0;
-    scoreTextBox.style.visibility="visible";
+    document.getElementById("score").textContent = "Score : " + 0;
+    scoreTextBox.style.visibility = "visible";
     apple = { x: 30, y: 30 };
-    gameOver=false;
+    gameOver = false;
     gameInterval = setInterval(update, 400);
     gameOverPopup.style.visibility = "hidden";
-  }
-  else{
+  } else {
     clearInterval(gameInterval);
     gameInterval = setInterval(update, 400);
   }
-  
 }
 function pauseGame() {
   gameInterval = clearInterval(gameInterval);
-  
 }
 var scoreElement = document.getElementById("scorePop");
 function showGameOverPopup() {
-
   gameOverPopup.style.visibility = "visible";
-  scoreTextBox.style.visibility="hidden";
-  gameOver=true;
+  scoreTextBox.style.visibility = "hidden";
+  gameOver = true;
   pauseGame();
 }
 function getRandomMultipleOf30() {
@@ -92,18 +88,53 @@ function update() {
   var head = { x: snake[0].x, y: snake[0].y };
   console.log("Head X:", head.x);
   console.log("Head Y:", head.y);
-  if (direction == "right") head.x += gridWidth;
-  if (direction == "left") head.x -= gridWidth;
-  if (direction == "up") head.y -= gridHeight;
-  if (direction == "down") head.y += gridHeight;
+  // if (direction == "right") {
+  //   head.x += gridWidth;
+  //   if(head.x>canvas.width) head.x=0;
+  // }
+  // if (direction == "left") {
+  //   head.x -= gridWidth;
+  //   head.x = canvas.width;
+  // }
+  // if (direction == "up") {
+  //   head.y -= gridHeight;
+  // }
+  // if (direction == "down") {
+  //   head.y += gridHeight;
+  // }
+
+  if (direction == "right") {
+    head.x += gridWidth;
+    if (head.x >= canvas.width / devicePixelRatio) {
+      head.x = 0;
+    }
+  }
+  if (direction == "left") {
+    head.x -= gridWidth;
+    if (head.x < 0) {
+      head.x = canvas.width / devicePixelRatio - gridWidth;
+    }
+  }
+  if (direction == "up") {
+    head.y -= gridHeight;
+    if (head.y < 0) {
+      head.y = canvas.height / devicePixelRatio - gridHeight;
+    }
+  }
+  if (direction == "down") {
+    head.y += gridHeight;
+    if (head.y >= canvas.height / devicePixelRatio) {
+      head.y = 0;
+    }
+  }
 
   if (head.x === apple.x && head.y === apple.y) {
     getRandomMultipleOf30();
     snakeLength++;
-    scoreTextBox.textContent = "Score : "+snake.length;
+    scoreTextBox.textContent = "Score : " + snake.length;
     scoreElement.textContent = snake.length;
   }
-  if(checkSelfBite()==true){
+  if (checkSelfBite() == true) {
     showGameOverPopup();
   }
 
@@ -121,7 +152,7 @@ function checkSelfBite() {
   // Iterate over the snake's body segments
   for (var i = 0; i < snake.length; i++) {
     var segment = snake[i];
-    var segmentKey = segment.x + '-' + segment.y; // Generate a unique key for the segment
+    var segmentKey = segment.x + "-" + segment.y; // Generate a unique key for the segment
 
     // Check if the segment is already in the hash set
     if (bodySet.has(segmentKey)) {
